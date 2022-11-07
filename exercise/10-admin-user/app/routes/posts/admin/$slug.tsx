@@ -17,10 +17,13 @@ import {
   getPost,
   updatePost,
 } from "~/models/post.server";
+import { requireAdminUser } from "~/session.server";
 
 // 🐨 get the request
-export async function loader({ params }: LoaderArgs) {
+export async function loader({ params, request }: LoaderArgs) {
   // 🐨 call requireAdminUser from session.server with the request
+  requireAdminUser(request);
+
   invariant(params.slug, "slug not found");
   if (params.slug === "new") {
     return json({ post: null });
@@ -139,7 +142,7 @@ export default function PostAdmin() {
             type="submit"
             name="intent"
             value="delete"
-            className="rounded bg-red-500 py-2 px-4 text-white hover:bg-red-600 focus:bg-red-400 disabled:bg-red-300"
+            className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600 focus:bg-red-400 disabled:bg-red-300"
             disabled={isDeleting}
           >
             {isDeleting ? "Deleting..." : "Delete"}
@@ -149,7 +152,7 @@ export default function PostAdmin() {
           type="submit"
           name="intent"
           value={isNewPost ? "create" : "update"}
-          className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400 disabled:bg-blue-300"
+          className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 focus:bg-blue-400 disabled:bg-blue-300"
           disabled={isCreating || isUpdating}
         >
           {isNewPost ? (isCreating ? "Creating..." : "Create") : null}
